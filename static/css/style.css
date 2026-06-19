@@ -1,0 +1,157 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #fff7fb, #f0f7ff);
+    color: #333;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: white;
+    border-bottom: 2px solid #eee;
+}
+
+.header-logo {
+    font-size: 24px;
+}
+
+.header-title {
+    font-weight: 700;
+}
+
+.header-subtitle {
+    font-size: 12px;
+    color: gray;
+}
+
+/* LIVE */
+.status-badge {
+    background: #dcfce7;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #15803d;
+}
+
+/* MAIN LAYOUT */
+.main {
+    padding: 20px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.card-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* VIDEO */
+.video-feed {
+    width: 100%;
+    border-radius: 14px;
+}
+
+.mini-info {
+    margin-top: 8px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    color: gray;
+}
+
+/* CENTER AVATAR */
+.avatar-center {
+    display: flex;
+    justify-content: center;
+}
+
+.avatar-card {
+    text-align: center;
+    background: white;
+    padding: 25px;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.avatar-title {
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #7c3aed;
+}
+
+.avatar-img-big {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 5px solid #fbcfe8;
+    object-fit: cover;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.therapy-label {
+    margin-top: 12px;
+    font-weight: 600;
+    color: #7c3aed;
+    background: #f3e8ff;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* STATUS */
+.status-label {
+    font-size: 12px;
+    color: gray;
+}
+
+.status-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.emotion { color: #6366f1; }
+.stress { color: #ef4444; }
+.focus { color: #22c55e; }
+
+/* THERAPY */
+.therapy-box {
+    background: #eef2ff;
+    border-left: 5px solid #6366f1;
+}
+
+/* LOG */
+#log-list {
+    font-size: 12px;
+}

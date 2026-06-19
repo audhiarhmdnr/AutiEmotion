@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASD EmotionAI - Child Dashboard</title>
+    <meta name="description" content="Real-time ASD Emotion Recognition dashboard dengan deteksi ekspresi wajah, tingkat stres, fokus, dan rekomendasi terapi ABA.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-sky: linear-gradient(180deg, #60a5fa 0%, #a78bfa 50%, #c084fc 100%);
+            --color-primary-text: #3b1f6e;
+            --color-secondary-text: #7c6a99;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: 4px solid #ffffff;
+            --card-shadow: 0 10px 25px rgba(124, 58, 237, 0.15);
+            
+            --accent-purple: #a855f7;
+            --accent-pink: #f472b6;
+            --accent-blue: #60a5fa;
+            --accent-green: #34d399;
+            --accent-red: #fb7185;
+            --accent-yellow: #fbbf24;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(180deg, #cce3fc 0%, #e8ddfc 40%, #fef3c7 100%);
+            color: var(--color-primary-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 90px; /* space for meadow */
+        }
+
+        /* ── BACKGROUND DECORATIONS (Landscape) ── */
+        .sky-clouds {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+            overflow: hidden;
+        }
+
+        .cloud-bg {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 100px;
+            filter: blur(4px);
+        }
+
+        .cloud-bg::before, .cloud-bg::after {
+            content: '';
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+        }
+
+        .cloud-bg.c1 { width: 120px; height: 40px; top: 40px; left: 10%; }
+        .cloud-bg.c1::before { width: 50px; height: 50px; top: -25px; left: 20px; }
+        .cloud-bg.c1::after { width: 40px; height: 40px; top: -20px; left: 60px; }
+
+        .cloud-bg.c2 { width: 180px; height: 50px; top: 120px; right: 15%; }
+        .cloud-bg.c2::before { width: 70px; height: 70px; top: -35px; left: 30px; }
+        .cloud-bg.c2::after { width: 60px; height: 60px; top: -25px; left: 85px; }
+
+        .cloud-bg.c3 { width: 100px; height: 30px; top: 80px; left: 45%; }
+        .cloud-bg.c3::before { width: 40px; height: 40px; top: -20px; left: 15px; }
+        .cloud-bg.c3::after { width: 30px; height: 30px; top: -15px; left: 45px; }
+
+        /* Bottom Meadow Grass & Characters */
+        .meadow {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(180deg, #6ee7b7 0%, #10b981 100%);
+            border-top: 6px solid #34d399;
+            z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 40px 10px;
+            pointer-events: none;
+        }
+
+        .bunny {
+            width: 50px;
+            height: 60px;
+            position: relative;
+            margin-bottom: -5px;
+        }
+
+        .smiling-star-bottom {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 5px;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 3px solid rgba(255, 255, 255, 0.8);
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo-sun {
+            width: 54px;
+            height: 54px;
+            animation: sun-spin 20s linear infinite;
+        }
+
+        @keyframes sun-spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-title-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 
+                -2px -2px 0 #ff4b82,  
+                 2px -2px 0 #ff4b82,
+                -2px  2px 0 #ff4b82,
+                 2px  2px 0 #ff4b82,
+                 0px  4px 8px rgba(255, 75, 130, 0.4);
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            font-weight: 800;
+            color: #6366f1;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-badge-wrapper {
+            background: #ffffff;
+            border: 3px solid #60a5fa;
+            border-radius: 30px;
+            padding: 4px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 13px;
+            box-shadow: 0 4px 8px rgba(96, 165, 250, 0.2);
+        }
+
+        .status-dot-green {
+            width: 10px;
+            height: 10px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink-green 1.5s infinite;
+        }
+
+        @keyframes blink-green {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .digital-clock {
+            color: #3b82f6;
+            font-weight: 800;
+        }
+
+        .music-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid #a78bfa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(167, 139, 250, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .header-greeting-btn {
+            background: #ffffff;
+            border: 3px solid #fbbf24;
+            border-radius: 30px;
+            padding: 6px 18px;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #d97706;
+            box-shadow: 0 4px 8px rgba(251, 191, 36, 0.3);
+        }
+
+        /* ── MAIN LAYOUT GRID ── */
+        .main {
+            padding: 24px;
+            max-width: 1440px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* ── CARDS BASIC STYLES ── */
+        .kids-card {
+            background: var(--card-bg);
+            border: var(--card-border);
+            border-radius: 28px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .kids-card-title {
+            font-size: 17px;
+            font-weight: 900;
+            color: #7c3aed;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kids-card-title span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── COLUMN 1: LEFT ── */
+        .cam-card {
+            padding: 14px;
+        }
+
+        .cam-rec-label {
+            font-size: 11px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        .video-box-container {
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 4px solid #f3e8ff;
+            background: #eef2ff;
+        }
+
+        .video-box-feed {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Scan overlay simulation box */
+        .scan-overlay-box {
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 50%;
+            height: 50%;
+            border: 4px dashed #22c55e;
+            border-radius: 16px;
+            pointer-events: none;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.15);
+        }
+
+        .scan-corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border: 4px solid #22c55e;
+            pointer-events: none;
+        }
+        .scan-corner.tl { top: -4px; left: -4px; border-right: 0; border-bottom: 0; }
+        .scan-corner.tr { top: -4px; right: -4px; border-left: 0; border-bottom: 0; }
+        .scan-corner.bl { bottom: -4px; left: -4px; border-right: 0; border-top: 0; }
+        .scan-corner.br { bottom: -4px; right: -4px; border-left: 0; border-top: 0; }
+
+        .video-overlay-tags {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .video-pill {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #a78bfa;
+            border-radius: 50px;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #5b21b6;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .video-pill.detecting {
+            border-color: #34d399;
+            color: #065f46;
+        }
+
+        .stat-card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .stat-col {
+            background: #ffffff;
+            border: 2px solid #f3e8ff;
+            border-radius: 18px;
+            padding: 10px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 140px;
+            transition: transform 0.2s;
+        }
+
+        .stat-col:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-col-title {
+            font-size: 9px;
+            font-weight: 800;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .stat-col-value {
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .stat-col-value.emotion-txt { color: #6366f1; }
+        .stat-col-value.confidence-txt { color: #3b82f6; }
+        .stat-col-value.stress-txt { color: #ef4444; }
+        .stat-col-value.focus-txt { color: #10b981; }
+
+        .stat-col-graphic {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: auto;
+        }
+
+        /* ── COLUMN 2: CENTER (AVATAR PRE-STAGE) ── */
+        .avatar-podium-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 10px 0;
+            margin-bottom: 12px;
+        }
+
+        .avatar-arch-ring {
+            position: absolute;
+            top: 20px;
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            border: 6px solid #e9d5ff;
+            background: radial-gradient(circle, rgba(243, 232, 255, 0.4) 0%, rgba(224, 242, 254, 0.4) 100%);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.15);
+            z-index: 1;
+        }
+
+        .avatar-arch-ring::before {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 2px dashed #c084fc;
+            opacity: 0.6;
+        }
+
+        .avatar-panda-img {
+            width: 280px;
+            height: 280px;
+            object-fit: contain;
+            z-index: 2;
+            animation: panda-bounce 3.5s ease-in-out infinite;
+            filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.15));
+            margin-top: 45px;
+        }
+
+        @keyframes panda-bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-12px) scale(1.02); }
+        }
+
+        .gold-podium {
+            width: 310px;
+            height: 60px;
+            background: linear-gradient(180deg, #fde047 0%, #ca8a04 100%);
+            border: 4px solid #fef08a;
+            border-radius: 50% / 25px;
+            z-index: 1;
+            margin-top: -35px;
+            box-shadow: 0 10px 20px rgba(202, 138, 4, 0.3);
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .gold-podium::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 5%;
+            width: 90%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+        }
+
+        .stage-lights {
+            position: absolute;
+            top: -15px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .stage-light-dot {
+            width: 6px;
+            height: 6px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffffff, 0 0 20px #fde047;
+            animation: twinkle 1s infinite alternate;
+        }
+
+        .stage-light-dot:nth-child(even) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* Banner Ribbon "Avatar Terapi" */
+        .ribbon-banner {
+            position: absolute;
+            top: 0px;
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+            border: 3px solid #e9d5ff;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 900;
+            padding: 6px 28px;
+            border-radius: 16px;
+            z-index: 10;
+            box-shadow: 0 6px 12px rgba(124, 58, 237, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .avatar-podium-caption-badge {
+            background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+            border: 3px solid #fbcfe8;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 20px;
+            border-radius: 30px;
+            z-index: 10;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(219, 39, 119, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ── COLUMN 2: ABA RECOMMENDATION ── */
+        .aba-rec-card {
+            background: #ffffff;
+            border: 4px solid #f3e8ff;
+            border-radius: 24px;
+            padding: 16px;
+            margin-top: 14px;
+            box-shadow: 0 6px 18px rgba(168, 85, 247, 0.08);
+        }
+
+        .aba-rec-box {
+            background: #eff6ff;
+            border: 3px solid #bfdbfe;
+            border-radius: 20px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .aba-music-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #2563eb;
+            flex-shrink: 0;
+            animation: bounce-slow 2s infinite;
+        }
+
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .aba-text-wrap {
+            flex-grow: 1;
+        }
+
+        .aba-headline-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-bottom: 2px;
+        }
+
+        .aba-desc-text {
+            font-size: 11px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .aba-cloud-illust {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+        }
+
+        /* ── COLUMN 3: RIGHT ── */
+        .status-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .status-row-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 10px 14px;
+        }
+
+        .status-row-item.stress-theme {
+            border-color: #fee2e2;
+        }
+
+        .status-row-item.focus-theme {
+            border-color: #d1fae5;
+        }
+
+        .status-avatar-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .status-info-side {
+            flex-grow: 1;
+        }
+
+        .status-row-lbl {
+            font-size: 10px;
+            font-weight: 800;
+            color: #9ca3af;
+            text-transform: uppercase;
+        }
+
+        .status-row-val {
+            font-size: 15px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .status-row-val.stress-val { color: #ef4444; }
+        .status-row-val.focus-val { color: #10b981; }
+
+        /* Bubble Dots Progress Indicator */
+        .bubble-dots-bar {
+            display: flex;
+            gap: 4px;
+        }
+
+        .bubble-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            transition: background 0.3s;
+        }
+
+        .stress-theme .bubble-dot.active { background: #f87171; }
+        .focus-theme .bubble-dot.active { background: #34d399; }
+
+        /* Terapi Hari Ini Card */
+        .therapy-today-card {
+            background: #fffdf5;
+            border: 4px solid #fef3c7;
+        }
+
+        .therapy-today-box {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 3px solid #fde047;
+            border-radius: 20px;
+            padding: 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #b45309;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .therapy-today-box::after {
+            content: '💖';
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-size: 14px;
+        }
+
+        /* Riwayat Emosi Card */
+        .history-card {
+            border-color: #d1fae5;
+        }
+
+        .history-log-table {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 175px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .history-log-table::-webkit-scrollbar {
+            width: 5px;
+        }
+        .history-log-table::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .history-log-table::-webkit-scrollbar-thumb {
+            background: #d1fae5;
+            border-radius: 10px;
+        }
+
+        .history-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 12px;
+            background: #ffffff;
+            border: 2px solid #ecfdf5;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #065f46;
+        }
+
+        .hist-time {
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        .hist-emotion {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hist-emoji {
+            font-size: 16px;
+        }
+
+        .hist-conf {
+            color: #6b7280;
+        }
+
+        /* ── FOOTER MOTIVATIONAL BANNER ── */
+        .footer-banner-wrapper {
+            position: fixed;
+            bottom: 12px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .footer-banner {
+            background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+            border: 4px solid #ffffff;
+            border-radius: 50px;
+            padding: 8px 36px;
+            box-shadow: 0 10px 20px rgba(167, 139, 250, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 900;
+            pointer-events: auto;
+        }
+
+        /* ── STARS FLOATING ── */
+        .sparkles-podium {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sparkle-star {
+            position: absolute;
+            font-size: 20px;
+            animation: floating-star 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes floating-star {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.5; }
+            100% { transform: translateY(-12px) scale(1.1); opacity: 1; }
+        }
+
+        /* ── INLINE CSS GRAPHICS / SVGS ── */
+        .progress-bar-wrap {
+            width: 100%;
+            height: 8px;
+            background: #eef2ff;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #dbeafe;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .gauge-wrap {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            overflow: hidden;
+        }
+
+        .gauge-body {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 6px solid #eef2ff;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+            transform: rotate(-45deg);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .gauge-arc {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 6px solid #ef4444;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: center;
+            transform: rotate(-45deg);
+            transition: transform 0.5s ease;
+        }
+
+        .gauge-needle {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: #4b5563;
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(0deg);
+            transition: transform 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sky background clouds -->
+    <div class="sky-clouds">
+        <div class="cloud-bg c1"></div>
+        <div class="cloud-bg c2"></div>
+        <div class="cloud-bg c3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-brand">
+            <!-- Smiling Sun Icon -->
+            <svg class="header-logo-sun" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="22" fill="#fbbf24" stroke="#f59e0b" stroke-width="3"/>
+                <!-- Sun Rays -->
+                <path d="M50 10 L50 20 M50 80 L50 90 M10 50 L20 50 M80 50 L90 50 M22 22 L29 29 M71 71 L78 78 M22 71 L29 64 M71 22 L78 29" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+                <!-- Smile Face -->
+                <path d="M42 45 Q42 42 44 42 M56 45 Q56 42 58 42" stroke="#451a03" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <path d="M44 54 Q50 60 56 54" stroke="#451a03" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <!-- Blush -->
+                <circle cx="38" cy="52" r="3" fill="#f43f5e" opacity="0.6"/>
+                <circle cx="62" cy="52" r="3" fill="#f43f5e" opacity="0.6"/>
+            </svg>
+            <div class="header-title-container">
+                <div class="header-title">ASD EmotionAI</div>
+                <div class="header-subtitle">Emotion Recognition Dashboard</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="live-badge-wrapper" id="connection-status">
+                <span class="status-dot-green"></span>
+                LIVE &nbsp;<span class="digital-clock" id="clock-txt">10:30:25</span>
+            </div>
+            <button class="music-btn" title="Mainkan Musik Terapi" onclick="playTherapyMusic()">🎵</button>
+            <div class="header-greeting-btn">
+                ⭐ Kamu hebat hari ini! 💖
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="main">
+        <div class="layout-grid">
+
+            <!-- ================= COLUMN 1 (LEFT) ================= -->
+            <div class="column-left">
+                <!-- Camera Detection -->
+                <div class="kids-card cam-card">
+                    <div class="kids-card-title">
+                        <span>📷 Kamera Deteksi</span>
+                        <div class="cam-rec-label" id="rec-label">● REC</div>
+                    </div>
+                    <div class="video-box-container">
+                        <img src="/video_feed" class="video-box-feed" alt="Video Feed" id="video-feed">
+                        <!-- Scanning box removed -->
+                        <div class="video-overlay-tags">
+                            <div class="video-pill" id="fps-pill">FPS: 24</div>
+                            <div class="video-pill detecting" id="face-pill">● Mendeteksi wajah</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistik Emosi -->
+                <div class="kids-card">
+                    <div class="kids-card-title">
+                        <span>⭐ Statistik Emosi</span>
+                    </div>
+                    <div class="stat-card-grid">
+                        <!-- Emotion Col -->
+                        <div class="stat-col">
+                            <div class="stat-col-title">Emosi</div>
+                            <div class="stat-col-value emotion-txt" id="emotion-txt">—</div>
+                            <div class="stat-col-graphic" id="emotion-graphic">
+                                <!-- Default graphic (neutral/loading cloud) -->
+                                <svg viewBox="0 0 64 64" width="40" height="40">
+                                    <path d="M18 40a12 12 0 0 1 10-12 16 16 0 0 1 28 4 12 12 0 0 1-6 22H18a10 10 0 0 1 0-20z" fill="#cbd5e1"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Confidence Col -->
+                        <div class="stat-col">
+                            <div class="stat-col-title">Confidence</div>
+                            <div class="stat-col-value confidence-txt" id="confidence-txt">0%</div>
+                            <div class="progress-bar-wrap" style="width: 80%; margin-bottom: 12px;">
+                                <div class="progress-bar-fill" id="confidence-bar-fill"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stress Col -->
+                        <div class="stat-col">
+                            <div class="stat-col-title">Stress</div>
+                            <div class="stat-col-value stress-txt" id="stress-txt">—</div>
+                            <div class="gauge-wrap" style="margin-bottom: 10px;">
+                                <div class="gauge-body"></div>
+                                <div class="gauge-arc" id="stress-gauge-arc"></div>
+                                <div class="gauge-needle" id="stress-gauge-needle"></div>
+                            </div>
+                        </div>
+
+                        <!-- Focus Col -->
+                        <div class="stat-col">
+                            <div class="stat-col-title">Fokus</div>
+                            <div class="stat-col-value focus-txt" id="focus-txt">—</div>
+                            <div class="stat-col-graphic" id="focus-graphic">
+                                <!-- Small plant seedling -->
+                                <svg viewBox="0 0 64 64" width="36" height="36">
+                                    <!-- Soil -->
+                                    <path d="M12 52 C20 54, 44 54, 52 52 C46 48, 18 48, 12 52 Z" fill="#78350f"/>
+                                    <!-- Stem -->
+                                    <path d="M32 50 L32 28" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
+                                    <!-- Leaf 1 -->
+                                    <path d="M32 38 Q22 30 24 24 Q32 26 32 34" fill="#34d399"/>
+                                    <!-- Leaf 2 -->
+                                    <path d="M32 34 Q42 26 40 20 Q32 22 32 30" fill="#34d399"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= COLUMN 2 (CENTER) ================= -->
+            <div class="column-center">
+                <!-- Avatar Stage Podium -->
+                <div class="avatar-podium-container">
+                    <div class="ribbon-banner">Avatar Terapi</div>
+                    
+                    <!-- Floating Sparkles around the arch -->
+                    <div class="sparkles-podium">
+                        <span class="sparkle-star" style="top: 25%; left: 8%; animation-delay: 0.2s;">⭐</span>
+                        <span class="sparkle-star" style="top: 15%; right: 10%; animation-delay: 0.6s;">🌟</span>
+                        <span class="sparkle-star" style="top: 55%; right: 5%; animation-delay: 1s;">⭐</span>
+                        <span class="sparkle-star" style="top: 45%; left: 4%; animation-delay: 1.4s;">🌟</span>
+                    </div>
+
+                    <!-- Arch Ring -->
+                    <div class="avatar-arch-ring"></div>
+
+                    <!-- Live Animal Avatar -->
+                    <img id="avatar-img" class="avatar-panda-img" src="/static/avatars/default.png" alt="Avatar Terapi">
+
+                    <!-- Gold Podium Stage -->
+                    <div class="gold-podium">
+                        <div class="stage-lights">
+                            <div class="stage-light-dot"></div>
+                            <div class="stage-light-dot"></div>
+                            <div class="stage-light-dot"></div>
+                            <div class="stage-light-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- Caption/Label under stage (Clickable Game Trigger) -->
+                    <button class="avatar-podium-caption-badge" id="therapy-badge" onclick="startExpressionGame()" style="cursor: pointer; transition: transform 0.2s; border: 3px solid #fbcfe8;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                        🎮 Ayo Main Game (1 Menit)!
+                    </button>
+                </div>
+
+                <!-- Rekomendasi ABA -->
+                <div class="kids-card aba-rec-card">
+                    <div class="kids-card-title" style="margin-bottom: 10px;">
+                        <span>💜 Rekomendasi ABA</span>
+                    </div>
+                    <div class="aba-rec-box">
+                        <div class="aba-music-icon-wrap">🎵</div>
+                        <div class="aba-text-wrap">
+                            <div class="aba-headline-title" id="aba-title">Calming Music & Guided Breathing</div>
+                            <div class="aba-desc-text" id="aba-desc">Ayo tarik napas pelan... hembuskan...</div>
+                        </div>
+                        <!-- Blow cloud illustration -->
+                        <svg class="aba-cloud-illust" viewBox="0 0 64 64">
+                            <path d="M12 40 C12 30, 24 25, 28 30 C32 20, 48 22, 50 32 C56 32, 58 40, 52 44 C48 46, 20 46, 12 40 Z" fill="#bae6fd" stroke="#38bdf8" stroke-width="2"/>
+                            <!-- blow lines -->
+                            <path d="M10 42 L2 42 M8 46 L0 46" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= COLUMN 3 (RIGHT) ================= -->
+            <div class="column-right">
+                <!-- Status Anak -->
+                <div class="kids-card">
+                    <div class="kids-card-title">
+                        <span>🌟 Status Anak</span>
+                    </div>
+                    <div class="status-rows">
+                        <!-- Stress Row -->
+                        <div class="status-row-item stress-theme">
+                            <div class="status-avatar-circle" id="stress-emoji">😐</div>
+                            <div class="status-info-side">
+                                <div class="status-row-lbl">Stress Level</div>
+                                <div class="status-row-val stress-val" id="stress-level-lbl">—</div>
+                                <!-- Bubble progress dots -->
+                                <div class="bubble-dots-bar" id="stress-bubble-bar">
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Focus Row -->
+                        <div class="status-row-item focus-theme">
+                            <div class="status-avatar-circle" id="focus-emoji">😐</div>
+                            <div class="status-info-side">
+                                <div class="status-row-lbl">Focus Level</div>
+                                <div class="status-row-val focus-val" id="focus-level-lbl">—</div>
+                                <!-- Bubble progress dots -->
+                                <div class="bubble-dots-bar" id="focus-bubble-bar">
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                    <div class="bubble-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terapi Hari Ini -->
+                <div class="kids-card therapy-today-card">
+                    <div class="kids-card-title" style="color: #b45309;">
+                        <span>🎯 Terapi Hari Ini</span>
+                    </div>
+                    <div class="therapy-today-box" id="therapy-today-text">
+                        Latihan pernapasan, musik menenangkan, dan pelukan virtual akan membantu kamu merasa lebih baik.
+                    </div>
+                </div>
+
+                <!-- Riwayat Emosi -->
+                <div class="kids-card history-card">
+                    <div class="kids-card-title" style="color: #059669;">
+                        <span>🟢 Riwayat Emosi</span>
+                    </div>
+                    <div class="history-log-table" id="log-list">
+                        <!-- logs injected dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Meadow Landscape Decoration -->
+    <div class="meadow">
+        <!-- Cute Rabbit SVG -->
+        <svg class="bunny" viewBox="0 0 64 80">
+            <!-- Ears -->
+            <ellipse cx="24" cy="20" rx="6" ry="18" fill="#ffffff" stroke="#e9d5ff" stroke-width="2"/>
+            <ellipse cx="24" cy="22" rx="3" ry="12" fill="#fbcfe8"/>
+            <ellipse cx="40" cy="20" rx="6" ry="18" fill="#ffffff" stroke="#e9d5ff" stroke-width="2"/>
+            <ellipse cx="40" cy="22" rx="3" ry="12" fill="#fbcfe8"/>
+            <!-- Body -->
+            <ellipse cx="32" cy="55" rx="20" ry="18" fill="#ffffff" stroke="#e9d5ff" stroke-width="2"/>
+            <!-- Head -->
+            <circle cx="32" cy="40" r="16" fill="#ffffff" stroke="#e9d5ff" stroke-width="2"/>
+            <!-- Eyes -->
+            <circle cx="26" cy="38" r="2" fill="#3b1f6e"/>
+            <circle cx="38" cy="38" r="2" fill="#3b1f6e"/>
+            <!-- Nose & Mouth -->
+            <polygon points="32,42 30,40 34,40" fill="#f472b6"/>
+            <!-- Blush -->
+            <circle cx="22" cy="42" r="2" fill="#fbcfe8"/>
+            <circle cx="42" cy="42" r="2" fill="#fbcfe8"/>
+        </svg>
+
+        <!-- Cute Star SVG -->
+        <svg class="smiling-star-bottom" viewBox="0 0 64 64">
+            <polygon points="32,4 40,24 62,24 45,36 51,58 32,45 13,58 19,36 2,24 24,24" fill="#fbbf24" stroke="#f59e0b" stroke-width="2"/>
+            <!-- Face -->
+            <circle cx="26" cy="32" r="2" fill="#78350f"/>
+            <circle cx="38" cy="32" r="2" fill="#78350f"/>
+            <path d="M28 38 Q32 42 36 38" stroke="#78350f" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </svg>
+    </div>
+
+    <!-- Footer Motivational Banner -->
+    <div class="footer-banner-wrapper">
+        <div class="footer-banner">
+            ⭐ Kamu kuat, kamu hebat, kamu luar biasa! 🌈
+        </div>
+    </div>
+
+    <script>
+        const MAX_LOG = 20;
+        let logHistory = [];
+        let lastEmotion = null;
+
+        // Digital clock update
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            document.getElementById('clock-txt').textContent = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function getIndonesianEmotion(emotion) {
+            const mapping = {
+                'joy': 'Senang',
+                'sadness': 'Sedih',
+                'anger': 'Marah',
+                'natural': 'Netral',
+                'surprise': 'Terkejut',
+                'fear': 'Takut'
+            };
+            return mapping[emotion.toLowerCase()] || emotion;
+        }
+
+        function getEmotionEmoji(emotion) {
+            const mapping = {
+                'joy': '😊',
+                'sadness': '😰',
+                'anger': '😡',
+                'natural': '😐',
+                'surprise': '😲',
+                'fear': '😱'
+            };
+            return mapping[emotion.toLowerCase()] || '😐';
+        }
+
+        // Returns raw HTML for the custom cloud/face graphic of that emotion
+        function getEmotionSVG(emotion) {
+            const emo = emotion.toLowerCase();
+            if (emo === 'joy') {
+                return `<svg viewBox="0 0 64 64" width="40" height="40">
+                    <circle cx="32" cy="32" r="24" fill="#fef08a" stroke="#eab308" stroke-width="2"/>
+                    <!-- Smile face -->
+                    <circle cx="24" cy="26" r="2" fill="#713f12"/>
+                    <circle cx="40" cy="26" r="2" fill="#713f12"/>
+                    <path d="M22 38 Q32 48 42 38" stroke="#713f12" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <circle cx="18" cy="34" r="3" fill="#f43f5e" opacity="0.6"/>
+                    <circle cx="46" cy="34" r="3" fill="#f43f5e" opacity="0.6"/>
+                </svg>`;
+            } else if (emo === 'sadness') {
+                return `<svg viewBox="0 0 64 64" width="40" height="40">
+                    <!-- Blue sad cloud with raindrops -->
+                    <path d="M18 42 C14 42, 10 38, 12 32 C12 24, 24 20, 28 26 C32 15, 48 18, 50 28 C56 28, 58 36, 52 42 Z" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+                    <!-- crying eyes -->
+                    <path d="M22 31 Q25 33 25 35" stroke="#1e3a8a" stroke-width="2" fill="none"/>
+                    <path d="M42 31 Q39 33 39 35" stroke="#1e3a8a" stroke-width="2" fill="none"/>
+                    <!-- Raindrops -->
+                    <path d="M20 48 L20 54" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M32 50 L32 56" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M44 48 L44 54" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                </svg>`;
+            } else if (emo === 'anger') {
+                return `<svg viewBox="0 0 64 64" width="40" height="40">
+                    <circle cx="32" cy="32" r="24" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+                    <!-- Angry face -->
+                    <path d="M18 22 L26 26" stroke="#991b1b" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M46 22 L38 26" stroke="#991b1b" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="23" cy="29" r="2.5" fill="#991b1b"/>
+                    <circle cx="41" cy="29" r="2.5" fill="#991b1b"/>
+                    <path d="M24 42 Q32 36 40 42" stroke="#991b1b" stroke-width="3" stroke-linecap="round" fill="none"/>
+                </svg>`;
+            } else if (emo === 'fear') {
+                return `<svg viewBox="0 0 64 64" width="40" height="40">
+                    <circle cx="32" cy="32" r="24" fill="#f3e8ff" stroke="#a855f7" stroke-width="2"/>
+                    <!-- scared face -->
+                    <ellipse cx="23" cy="26" rx="3" ry="5" fill="#581c87"/>
+                    <ellipse cx="41" cy="26" rx="3" ry="5" fill="#581c87"/>
+                    <circle cx="32" cy="40" r="6" fill="#581c87"/>
+                </svg>`;
+            } else if (emo === 'surprise') {
+                return `<svg viewBox="0 0 64 64" width="40" height="40">
+                    <circle cx="32" cy="32" r="24" fill="#ffedd5" stroke="#f97316" stroke-width="2"/>
+                    <!-- Surprised face -->
+                    <circle cx="22" cy="24" r="3.5" fill="#7c2d12"/>
+                    <circle cx="42" cy="24" r="3.5" fill="#7c2d12"/>
+                    <circle cx="32" cy="38" r="7" fill="#7c2d12"/>
+                </svg>`;
+            } else {
+                // Natural/default cloud
+                return `<svg viewBox="0 0 64 64" width="40" height="40">
+                    <path d="M18 40 C14 40, 10 36, 12 30 C12 22, 24 18, 28 24 C32 14, 48 16, 50 26 C56 26, 58 34, 52 40 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+                    <!-- Face -->
+                    <circle cx="24" cy="28" r="2" fill="#475569"/>
+                    <circle cx="40" cy="28" r="2" fill="#475569"/>
+                    <line x1="26" y1="34" x2="38" y2="34" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+                </svg>`;
+            }
+        }
+
+        function updateLog(emotion, confidence) {
+            if (emotion === '-' || emotion === '—' || !emotion) return;
+            if (emotion === lastEmotion) return;
+            lastEmotion = emotion;
+
+            const timeStr = new Date().toTimeString().slice(0, 8);
+            const indEmotion = getIndonesianEmotion(emotion);
+            const emoji = getEmotionEmoji(emotion);
+
+            logHistory.unshift({ time: timeStr, emotion: indEmotion, emoji, confidence });
+            if (logHistory.length > MAX_LOG) logHistory.pop();
+
+            const list = document.getElementById('log-list');
+            list.innerHTML = logHistory.map(entry => `
+                <div class="history-row">
+                    <span class="hist-time">${entry.time}</span>
+                    <span class="hist-emotion">
+                        <span class="hist-emoji">${entry.emoji}</span> ${entry.emotion}
+                    </span>
+                    <span class="hist-conf">${entry.confidence}%</span>
+                </div>
+            `).join('');
+        }
+
+        // Updates progress bubble dots
+        function updateBubbleDots(containerId, activeCount) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const dots = container.querySelectorAll('.bubble-dot');
+            dots.forEach((dot, index) => {
+                if (index < activeCount) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Simple helper to map textual status to active bubble dot counts (0 to 8)
+        function getStatusDotCount(value) {
+            const val = String(value).toLowerCase();
+            if (val.includes('tinggi') || val.includes('high')) return 7;
+            if (val.includes('sedang') || val.includes('medium')) return 4;
+            if (val.includes('rendah') || val.includes('low')) return 2;
+            return 0;
+        }
+
+        function getStatusEmoji(value, isStress) {
+            const val = String(value).toLowerCase();
+            if (isStress) {
+                if (val.includes('tinggi') || val.includes('high')) return '😰';
+                if (val.includes('sedang') || val.includes('medium')) return '😐';
+                return '😊';
+            } else {
+                // Focus
+                if (val.includes('tinggi') || val.includes('high')) return '😊';
+                if (val.includes('sedang') || val.includes('medium')) return '😐';
+                return '😢';
+            }
+        }
+
+        function updateStatus() {
+            fetch('/status?t=' + Date.now())
+                .then(res => res.json())
+                .then(data => {
+                    const newEmotion = data.emotion || '—';
+                    latestRealtimeEmotion = newEmotion;
+                    const newConf    = (data.confidence !== undefined && data.confidence !== null)
+                                        ? Math.round(data.confidence) : 0;
+                    const newStress  = data.stress  || '—';
+                    const newFocus   = data.focus   || '—';
+                    const newTherapy = data.therapy || '-';
+
+                    // 1. Emotion column update
+                    const indEmotion = getIndonesianEmotion(newEmotion);
+                    document.getElementById('emotion-txt').textContent = indEmotion;
+                    document.getElementById('emotion-graphic').innerHTML = getEmotionSVG(newEmotion);
+
+                    // 2. Confidence progress bar
+                    document.getElementById('confidence-txt').textContent = newConf + '%';
+                    document.getElementById('confidence-bar-fill').style.width = newConf + '%';
+
+                    // 3. Stress gauge rotation
+                    document.getElementById('stress-txt').textContent = newStress;
+                    const stressValLower = String(newStress).toLowerCase();
+                    let angle = -45; // default center/neutral
+                    let color = '#3b82f6';
+                    if (stressValLower.includes('tinggi')) { angle = 45; color = '#ef4444'; }
+                    else if (stressValLower.includes('rendah')) { angle = -135; color = '#10b981'; }
+                    document.getElementById('stress-gauge-arc').style.transform = `rotate(${angle}deg)`;
+                    document.getElementById('stress-gauge-arc').style.borderColor = `${color} transparent transparent ${color}`;
+                    document.getElementById('stress-gauge-needle').style.transform = `translateX(-50%) rotate(${angle + 45}deg)`;
+
+                    // 4. Focus level seedling size
+                    document.getElementById('focus-txt').textContent = newFocus;
+                    const focusValLower = String(newFocus).toLowerCase();
+                    const seedlingSvg = document.getElementById('focus-graphic');
+                    if (focusValLower.includes('tinggi')) {
+                        seedlingSvg.style.transform = 'scale(1.2)';
+                    } else if (focusValLower.includes('rendah')) {
+                        seedlingSvg.style.transform = 'scale(0.8)';
+                    } else {
+                        seedlingSvg.style.transform = 'scale(1.0)';
+                    }
+
+                    // 5. Center avatar image & Therapy badge label
+                    const avatarImg = document.getElementById('avatar-img');
+                    const therapyBadge = document.getElementById('therapy-badge');
+                    if (data.avatar) {
+                        avatarImg.src = '/static/avatars/' + data.avatar + '?t=' + Date.now();
+                    }
+                    if (newTherapy !== '-' && newTherapy !== '—') {
+                        therapyBadge.textContent = '💜 ' + newTherapy;
+                        // update ABA therapy box recommendation detail
+                        document.getElementById('aba-title').textContent = newTherapy;
+                        document.getElementById('aba-desc').textContent = 'Lakukan aktivitas ini agar merasa lebih baik!';
+                        document.getElementById('therapy-today-text').textContent = 'Terapi aktif saat ini: ' + newTherapy + '. Rekomendasi diusulkan berdasarkan ekspresi wajah yang terdeteksi secara real-time.';
+                    } else {
+                        therapyBadge.textContent = '💜 Aku di sini untukmu!';
+                        document.getElementById('aba-title').textContent = 'Calming Music & Guided Breathing';
+                        document.getElementById('aba-desc').textContent = 'Ayo tarik napas pelan... hembuskan...';
+                        document.getElementById('therapy-today-text').textContent = 'Latihan pernapasan, musik menenangkan, dan pelukan virtual akan membantu kamu merasa lebih baik.';
+                    }
+
+                    // Speak out therapy suggestion automatically (Web Speech API Text-to-Speech)
+                    if (newTherapy !== '-' && newTherapy !== '—') {
+                        speakTherapy(newTherapy);
+                    }
+
+                    // 6. Child Status Rows (Stress & Focus levels with bubble progress dots)
+                    document.getElementById('stress-level-lbl').textContent = newStress;
+                    document.getElementById('stress-emoji').textContent = getStatusEmoji(newStress, true);
+                    updateBubbleDots('stress-bubble-bar', getStatusDotCount(newStress));
+
+                    document.getElementById('focus-level-lbl').textContent = newFocus;
+                    document.getElementById('focus-emoji').textContent = getStatusEmoji(newFocus, false);
+                    updateBubbleDots('focus-bubble-bar', getStatusDotCount(newFocus));
+
+                    // 7. Update log list
+                    updateLog(newEmotion, newConf);
+
+                    // Connection status color reset
+                    const connBadge = document.getElementById('connection-status');
+                    connBadge.style.borderColor = '#60a5fa';
+                    connBadge.style.color = '#3b82f6';
+                })
+                .catch(err => {
+                    console.warn('[status] fetch error:', err);
+                    const connBadge = document.getElementById('connection-status');
+                    connBadge.style.borderColor = '#fb7185';
+                    connBadge.style.color = '#e11d48';
+                });
+        }
+
+        // --- Text to Speech & Music Synthesizer Functions ---
+        let lastSpokenTherapy = null;
+
+        function speakTherapy(therapyText) {
+            if (isGameActive) return; // Don't interrupt the interactive game
+            if (!therapyText || therapyText === '-' || therapyText === '—') return;
+            if (therapyText === lastSpokenTherapy) return; 
+            lastSpokenTherapy = therapyText;
+
+            if ('speechSynthesis' in window) {
+                // Cancel ongoing speak to avoid overlapping
+                window.speechSynthesis.cancel();
+
+                // Translate English terms to friendly Indonesian children expressions
+                let message = `Rekomendasi terapi saat ini: ${therapyText}`;
+                const cleanText = therapyText.toLowerCase();
+                if (cleanText.includes("calming music") || cleanText.includes("breathing")) {
+                    message = "Wah, sepertinya kamu sedang sedih ya. Ayo, tarik napas pelan-pelan bersama Panda... lalu hembuskan. Dengarkan musik yang tenang ini ya!";
+                } else if (cleanText.includes("relaxation")) {
+                    message = "Kamu sedang marah ya? Tidak apa-apa, ayo rilekskan tubuhmu dan tenang bersama Panda.";
+                } else if (cleanText.includes("social play")) {
+                    message = "Hore! Kamu senang sekali hari ini! Ayo kita bermain dan bernyanyi bersama Panda!";
+                } else if (cleanText.includes("exploratory play")) {
+                    message = "Wah, seru sekali! Mari kita temukan hal-hal baru dan bermain bersama Panda!";
+                } else if (cleanText.includes("safety exercises") || cleanText.includes("safety")) {
+                    message = "Jangan takut, Panda ada di sini menemanimu. Kamu aman bersamaku.";
+                } else if (cleanText.includes("standard aba")) {
+                    message = "Ayo kita belajar dan bermain bersama Panda dengan gembira!";
+                }
+
+                speakText(message);
+            }
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.95;  
+                utterance.pitch = 1.3; 
+
+                const voices = window.speechSynthesis.getVoices();
+                const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+                if (idVoice) utterance.voice = idVoice;
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initialize voice engine
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+        }
+
+        let audioCtx = null;
+        let musicInterval = null;
+        let isMusicPlaying = false;
+
+        function playTherapyMusic() {
+            const musicBtn = document.querySelector('.music-btn');
+            if (isMusicPlaying) {
+                // Stop music
+                if (musicInterval) clearInterval(musicInterval);
+                isMusicPlaying = false;
+                musicBtn.style.background = '#ffffff';
+                musicBtn.style.transform = 'scale(1)';
+                return;
+            }
+
+            // Start music context
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            isMusicPlaying = true;
+            musicBtn.style.background = '#d8b4fe'; // active color
+            musicBtn.style.transform = 'scale(1.1)';
+
+            const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]; // C major notes
+            let step = 0;
+            const melody = [2, 4, 5, 4, 2, 0, 1, 2, 0, 2, 4, 2, 0, 1, 2, 4]; // cute baby lullaby melody loop
+
+            musicInterval = setInterval(() => {
+                if (!isMusicPlaying) return;
+
+                const noteIndex = melody[step % melody.length];
+                const freq = notes[noteIndex];
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                // Cute chime oscillator shape
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.2);
+
+                step++;
+            }, 600);
+        }
+
+        // --- INTERACTIVE GAME CONTROLLER (1 MINUTE CHALLENGE) ---
+        let isGameActive = false;
+        let gameTimer = null;
+        let gameSeconds = 60;
+        let gameStep = 0;
+        let latestRealtimeEmotion = '';
+
+        function playApplauseSound() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            // Create a short synthesized clap sound using filtered white noise
+            const bufferSize = audioCtx.sampleRate * 1.5;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            for (let j = 0; j < 6; j++) {
+                const delay = j * 0.12;
+                const noiseNode = audioCtx.createBufferSource();
+                noiseNode.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 900 + Math.random() * 300;
+                filter.Q.value = 2.5;
+
+                const gainNode = audioCtx.createGain();
+
+                noiseNode.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime + delay);
+                gainNode.gain.linearRampToValueAtTime(0.07, audioCtx.currentTime + delay + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + delay + 0.2);
+
+                noiseNode.start(audioCtx.currentTime + delay);
+                noiseNode.stop(audioCtx.currentTime + delay + 0.25);
+            }
+        }
+
+        function startExpressionGame() {
+            if (isGameActive) return; // Prevent double trigger
+            isGameActive = true;
+            gameSeconds = 60;
+            gameStep = 1;
+            
+            const gameBtn = document.getElementById('therapy-badge');
+            gameBtn.style.background = 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)';
+            gameBtn.innerHTML = `🎮 Waktu bermain: ${gameSeconds}s`;
+
+            // Start instruction
+            speakText("Hai adik hebat! Ayo bermain tebak ekspresi seru satu menit bersama Panda! Ikuti ekspresi wajah Panda ya!");
+            
+            // Temporary override avatar image to default happy
+            document.getElementById('avatar-img').src = '/static/avatars/happy.png';
+            document.getElementById('aba-title').textContent = "Game: Tebak Ekspresi Panda!";
+            document.getElementById('aba-desc').textContent = "Panda sedang senang! Tunjukkan senyum terbaikmu!";
+
+            // 1 minute sequence
+            gameTimer = setInterval(() => {
+                gameSeconds--;
+                if (gameSeconds <= 0) {
+                    endExpressionGame(true);
+                    return;
+                }
+                
+                gameBtn.innerHTML = `🎮 Waktu bermain: ${gameSeconds}s`;
+
+                // Phase transitions
+                if (gameSeconds === 45) {
+                    gameStep = 2;
+                    speakText("Hebat! Sekarang Panda pura-pura terkejut! O-ow! Buka matamu dan mulutmu lebar-lebar!");
+                    document.getElementById('avatar-img').src = '/static/avatars/surprised.png';
+                    document.getElementById('aba-desc').textContent = "Panda terkejut! Buka matamu lebar-lebar!";
+                } else if (gameSeconds === 30) {
+                    gameStep = 3;
+                    speakText("Luar biasa! Sekarang mari kita rileks dan tenang bersama Panda. Tarik napas pelan-pelan... lalu hembuskan.");
+                    document.getElementById('avatar-img').src = '/static/avatars/neutral.png';
+                    document.getElementById('aba-desc').textContent = "Panda tenang. Tarik napas perlahan...";
+                } else if (gameSeconds === 15) {
+                    gameStep = 4;
+                    speakText("Hebat sekali! Ayo tunjukkan senyum paling ceria sekali lagi sebelum permainan berakhir!");
+                    document.getElementById('avatar-img').src = '/static/avatars/happy.png';
+                    document.getElementById('aba-desc').textContent = "Tunjukkan senyuman ceriamu!";
+                }
+
+                // Check mimic success in real-time
+                checkMimicSuccess();
+            }, 1000);
+        }
+
+        let lastMimicSuccessStep = 0;
+        function checkMimicSuccess() {
+            if (!isGameActive) return;
+            const emo = latestRealtimeEmotion.toLowerCase();
+            
+            if (gameStep === 1 && emo === 'joy' && lastMimicSuccessStep !== 1) {
+                lastMimicSuccessStep = 1;
+                playApplauseSound();
+                speakText("Wah, senyumanmu indah sekali! Kamu hebat!");
+            } else if (gameStep === 2 && emo === 'surprise' && lastMimicSuccessStep !== 2) {
+                lastMimicSuccessStep = 2;
+                playApplauseSound();
+                speakText("Luar biasa! Wajah terkejutmu mirip sekali dengan Panda!");
+            } else if (gameStep === 3 && emo === 'natural' && lastMimicSuccessStep !== 3) {
+                lastMimicSuccessStep = 3;
+                playApplauseSound();
+                speakText("Pintar sekali! Kamu sudah bisa tenang dengan sangat baik.");
+            } else if (gameStep === 4 && emo === 'joy' && lastMimicSuccessStep !== 4) {
+                lastMimicSuccessStep = 4;
+                playApplauseSound();
+                speakText("Senyum yang sangat bagus!");
+            }
+        }
+
+        function endExpressionGame(isCompleted) {
+            clearInterval(gameTimer);
+            isGameActive = false;
+            
+            const gameBtn = document.getElementById('therapy-badge');
+            gameBtn.style.background = 'linear-gradient(135deg, #f472b6 0%, #db2777 100%)';
+            gameBtn.innerHTML = `🎮 Ayo Main Game (1 Menit)!`;
+
+            if (isCompleted) {
+                playApplauseSound();
+                // Play extra clap sound for celebration
+                setTimeout(playApplauseSound, 300);
+                speakText("Hore! Waktu bermain satu menit sudah habis. Kamu anak yang sangat kuat, hebat, dan luar biasa! Terima kasih sudah bermain bersama Panda hari ini!");
+            }
+            lastMimicSuccessStep = 0;
+        }
+
+        // Real-time update status
+        setInterval(updateStatus, 350);
+        updateStatus();
+    </script>
+
+</body>
+</html>
